@@ -4,7 +4,7 @@
 
 这个系统是一个基于 STM32 和 FreeRTOS 的多任务电机控制。STM32 负责底层外设驱动，包括 ADC 采样、PWM 电机控制、按键扫描、MPU6050 姿态I2C协议读取和串口打印；FreeRTOS 负责把这些功能拆成独立任务并发运行，让采样、控制、打印互不干扰，系统结构清晰，易移植。
 
-![系统实物图](https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/5.png)
+<img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/5.png" width="240" alt="Keil调试结果">
 
 系统通过反射式传感器判断与地面的距离，并控制直流电机的转速，同时通过MPU6050姿态传感器计算倾斜角。具体来说，AD 任务不断采集传感器并通过队列`xQueue_01`把最新值送给电机任务，电机任务根据 AD 百分比决定速度档位；按键不断刷新判断开关状态，作为所有模块的总开关；MPU6050 任务读取三轴的重力加速度并计算相对于z轴的倾斜角；串口任务以2 Hz速度打印整机状态，输出在电脑端的串口窗口。系统整体上清晰解耦，便于后续继续加入 PID、异常处理等功能。
 
@@ -15,7 +15,7 @@
 | 2 | 直流电机 | DC 6V TT Geared Motor |
 | 3 | 姿态传感器 | MPU6050 |
 | 4 | USB转串口 | CH340 |
-| 5 | 调试器 | ST-LINK V2 |
+| 5 | 调试下载器 | ST-LINK V2 |
 | 6 | 电机驱动模块 | TB6612 |
 
 ## 3 系统任务与实现
@@ -41,23 +41,40 @@
 
 
 
-##4 结果展示
-系统运行后，串口会周期性打印如下格式的状态信息：
+## 4 结果展示
+搭建实物图：
 
+<img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/7.png" width="400" alt="系统实物图">
 
+系统运行后，串口会周期性打印如下状态信息：
 
+<img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/8.png" width="400" alt="串口打印结果">
 
-## 如何使用
+串口的具体打印结果：
+
+<img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/15.png" width="400" alt="串口的具体打印结果">
+
+- Key：系统开关
+- AD：采集数据
+- Speed：电机转速
+- angle：倾斜角（不区分方向）
+
+Keil调试结果：
+
+<img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/13.png" width="400" alt="Keil调试结果">
+
+## 5 硬件使用
 1.  **开发环境**: 使用Keil MDK进行代码编译与调试。
-2.  **程序下载**: 通过ST-LINK V2将编译好的固件下载到STM32F1系列单片机中。
-3.  **硬件连接**: 按硬件清单连接各模块，注意电机部分需保证供电充足（建议使用充电宝而非电脑USB口直接供电）。
+2.  **程序下载**: 通过ST-LINK V2将编译好的固件下载到单片机中。
+3.  **硬件连接**: 按硬件清单连接各模块，注意电机部分需保证供电5V。
 4.  **观测结果**: 将CH340串口模块连接至电脑，打开串口助手（波特率9600），即可查看系统实时状态。
 
-## 注意事项
-1.  **系统使能**：按键(`KEY`)是**总开关**，仅当`KEY_ON`时，ADC、MPU6050和电机控制任务才会被启用。
-2.  **I2C总线问题**：若MPU6050打印的角度值固定为`125.26`或`nan`，可能是硬件I2C总线因接触不良等原因卡死。可尝试更换为**软件I2C**驱动，或执行总线复位操作。
-3.  **供电问题**：驱动电机时，电脑USB口供电可能不足，导致电机无法启动。**更换为充电宝等独立电源**可解决。
-4.  **FreeRTOS配置**：
+<img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/14.png" width="320" alt="接线表">
+
+## 6 Debug注意事项
+1.  **I2C总线问题**：若MPU6050打印的角度值固定为`125.26`或`nan`，可能是硬件I2C总线因接触不良等原因的总线卡死。可尝试更换为**软件I2C**驱动，或执行总线释放操作。
+2.  **供电问题**：驱动电机时，电脑USB口供电可能不足，导致电机启动失败。更换为充电宝等独立电源可解决。
+3.  **FreeRTOS配置**：
     - 需注意将`SVC_Handler`、`PendSV_Handler`、`SysTick_Handler`三个中断服务函数在`FreeRTOSConfig.h`中启用，以将内核滴答交由FreeRTOS管理。
-    - 应根据实际使用情况合理设置FreeRTOS的堆栈总大小，避免RAM溢出。
-5.  **休眠模式**：ADC模块可通过`ADC_Cmd`控制，MPU6050可通过其内部的`PWR`寄存器控制，分别进入休眠以节能。
+    - 应根据实际情况设置FreeRTOS的堆栈总大小，避免RAM溢出。
+4.  **休眠模式**：ADC模块可通过`ADC_Cmd`控制，MPU6050可通过其内部的`PWR`寄存器控制，以分别进入暂时休眠。
