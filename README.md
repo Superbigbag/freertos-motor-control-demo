@@ -10,7 +10,7 @@
 
 ## 2 硬件清单
 | 序号 | 器件名 | 型号 |
-| :--- | :--- | :--- |
+| --- | --- | --- |
 | 1 | 反射式传感器 | TCRT5000 |
 | 2 | 直流电机 | DC 6V TT Geared Motor |
 | 3 | 姿态传感器 | MPU6050 |
@@ -42,31 +42,32 @@
 
 
 ## 4 结果展示
-搭建实物图：
+ - 搭建实物图：
+对应序号见硬件清单
 
 <img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/7.png" width="400" alt="系统实物图">
 
-系统运行后，串口会周期性打印如下状态信息：
+ - 系统运行后，串口会周期性打印如下状态信息：
 
-<img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/8.png" width="400" alt="串口打印结果">
+<img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/8.png" width="350" alt="串口打印结果">
 
-串口的具体打印结果：
+ - 串口的具体打印结果：
 
-<img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/15.png" width="400" alt="串口的具体打印结果">
+<img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/15.jpg" width="300" alt="串口的具体打印结果">
 
-- Key：系统开关
-- AD：采集数据
-- Speed：电机转速
-- angle：倾斜角（不区分方向）
+    Key：系统开关
+    AD：采集数据
+    Speed：电机转速
+    angle：倾斜角（不区分方向）
 
-Keil调试结果：
+ - Keil调试结果：
 
-<img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/13.png" width="400" alt="Keil调试结果">
+<img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/13.png" width="420" alt="Keil调试结果">
 
 ## 5 硬件使用
 1.  **开发环境**: 使用Keil MDK进行代码编译与调试。
 2.  **程序下载**: 通过ST-LINK V2将编译好的固件下载到单片机中。
-3.  **硬件连接**: 按硬件清单连接各模块，注意电机部分需保证供电5V。
+3.  **硬件连接**: 按下面的接线表连接各模块，注意电机部分需供电5V。
 4.  **观测结果**: 将CH340串口模块连接至电脑，打开串口助手（波特率9600），即可查看系统实时状态。
 
 <img src="https://github.com/Superbigbag/freertos-motor-control-demo/blob/main/Picture/14.png" width="320" alt="接线表">
