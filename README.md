@@ -18,7 +18,7 @@
 | 5 | 调试下载器 | ST-LINK V2 |
 | 6 | 电机驱动模块 | TB6612 |
 
-配置环境：keil5，Freertos版本202107.00，芯片:stm32f103c8t6
+配置环境：Win10，keil5，Freertos版本202107.00，芯片:stm32f103c8t6
 
 ## 3 系统任务与实现
 - **ADC采样任务 (AD Task)**:
